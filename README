@@ -1,0 +1,46 @@
+ Client Responsibilities Summary
+Connect to Server
+
+TCP connection on port 3000 (with provided host/IP).
+
+Send Request (Binary Format)
+
+callType (1 byte):
+
+1 → Stream All Packets
+
+2 → Resend Packet
+
+resendSeq (1 byte):
+
+Only used if callType = 2
+
+Handle Responses
+
+Each response packet is 17 bytes in Big Endian:
+
+4 bytes: Symbol (ASCII)
+
+1 byte: Buy/Sell ("B"/"S")
+
+4 bytes: Quantity (int32)
+
+4 bytes: Price (int32)
+
+4 bytes: Packet Sequence (int32)
+
+Check for Missing Packets
+
+Collect all sequence numbers.
+
+Detect any gaps in sequences (except last).
+
+For each missing sequence, resend request with callType = 2 and that sequence number.
+
+Best Practices
+
+Handle disconnections/errors gracefully.
+
+Always close the connection after “Resend Packet” requests.
+
+Log issues and verify data integrity.
